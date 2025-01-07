@@ -1,21 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/21 11:16:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/01/07 09:44:21 by thomas           ###   ########.fr       */
+/*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
+/*   Updated: 2025/01/07 14:58:17 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "pipex.h"
 
-# include "./libft/libft.h"
-# include "./ft_printf/ft_printf.h"
-# include <stdio.h>
-# include <unistd.h>
-
-#endif
+int	main(int argc, char **argv)
+{
+	if (argc > 4)
+	{
+		if (access(argv[1], F_OK) == -1)
+			ft_printf("No such file or directory : %s", argv[1]);
+	}	
+}

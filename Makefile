@@ -3,33 +3,38 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+         #
+#    By: thomas <thomas@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/21 11:21:08 by tmillot           #+#    #+#              #
-#    Updated: 2024/12/21 11:28:32 by tmillot          ###   ########.fr        #
+#    Updated: 2025/01/07 14:51:31 by thomas           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = pipex
 
-CC = CC
+CC = cc
 
 CFLAGS = -Wall -Werror -Wextra -g
 
-SRCS = $(wildcard *.c)
+SRCS = ft_printf/ft_print_pointer.c \
+		ft_printf/ft_printf.c \
+		ft_printf/ft_putnbr_count.c \
+		ft_printf/ft_putnbr_hexa.c \
+		ft_printf/ft_putstr_count.c \
+		$(wildcard *.c)
 
 OBJS = $(SRCS:.c=.o)
 
 LIBFT_DIR = libft
 
-LIBFT_INCLUDE = -I(LIBFT_DIR)/includes
+LIBFT_INCLUDE = -I$(LIBFT_DIR)/includes
 
 LIBFT_LIB = $(LIBFT_DIR)/libft.a
 
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT_LIB)
-		$(CC) $(CFLAGS) $(LIBFT_INCLUDE) $(OBJS) -L $(LIBFT_DIR) -lft -o $(NAME)
+		$(CC) $(CFLAGS) $(LIBFT_INCLUDE) $(OBJS) -L$(LIBFT_DIR) -lft -o $(NAME)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(LIBFT_INCLUDE) -c $< -o $@

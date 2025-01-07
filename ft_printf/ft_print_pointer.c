@@ -1,21 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   ft_print_pointer.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/21 11:16:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/01/07 09:44:21 by thomas           ###   ########.fr       */
+/*   Created: 2024/11/16 20:39:05 by toto              #+#    #+#             */
+/*   Updated: 2025/01/07 14:47:25 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "ft_printf.h"
 
-# include "./libft/libft.h"
-# include "./ft_printf/ft_printf.h"
-# include <stdio.h>
-# include <unistd.h>
+void	ft_print_pointer(unsigned long ptr, int *count)
+{
+	const char		*hexa;
+	char			stock[16];
+	int				i;
 
-#endif
+	hexa = "0123456789abcdef";
+	i = 0;
+	if (!ptr)
+		(*count) += write(1, "(nil)", 5);
+	if (ptr != 0)
+	{
+		while (ptr > 0)
+		{
+			stock[i++] = hexa[ptr % 16];
+			ptr = ptr / 16;
+		}
+		(*count) += write(1, "0x", 2);
+		while (i > 0)
+			(*count) += write(1, &stock[--i], 1);
+	}
+}
