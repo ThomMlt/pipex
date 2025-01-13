@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
+/*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/13 11:14:04 by thomas           ###   ########.fr       */
+/*   Updated: 2025/01/13 12:50:57 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../includes/pipex.h"
 
 int	find_path(char **env)
 {
@@ -21,50 +21,11 @@ int	find_path(char **env)
 	i = 0;
 	while (env[i] != NULL)
 	{
-		if (ft_strncmp(path, env[i], 4) ==  0)
+		if (ft_strncmp(path, env[i], 4) == 0)
 			return (i);
 		i++;
 	}
 	return (-1);
-}
-
-void ft_free_split(char **split)
-{
-    int	i;
-
-	i = 0;
-    while (split[i])
-    {
-        free(split[i]);
-        i++;
-    }
-    free(split);
-}
-
-void	free_essential(char **s1, char *s2)
-{
-	int	i;
-
-	i = 0;
-	while (s1[i])
-		free(s1[i++]);
-	free(s1);
-	free(s2);
-}
-
-void	free_all(char **s1, char **s2, char *s3)
-{
-	int	i;
-
-	i = 0;
-	while (s1[i])
-		free(s1[i++]);
-	free(s1);
-	i = 0;
-	while (s2[i])
-		free(s2[i++]);
-	free(s2);
-	free(s3);
 }
 
 void	exec_path(char *argv, char **env)
@@ -84,20 +45,22 @@ void	exec_path(char *argv, char **env)
 		path_cmd = ft_strjoin(path[i], cmd_slash);
 		if (access(path_cmd, F_OK | X_OK) == 0)
 		{
-			free_essential(path, cmd_slash);
+			ft_free_tab(path);
+			free(cmd_slash);
 			execve(path_cmd, cmd, env);
-			free_essential(cmd, path_cmd);
+			free_all(cmd, &path_cmd);
 		}
 		free(path_cmd);
 		i++;
 	}
-	free_all(path, cmd, cmd_slash);
+	free_all(path, cmd);
+	free(cmd_slash);
 }
 
 void	processus_1(char *in_file, char *cmd, int pipefd[2], char **env)
 {
 	int	in_file_fd;
-	
+
 	in_file_fd = open(in_file, O_RDONLY);
 	if (in_file_fd == -1)
 	{
@@ -135,16 +98,16 @@ int	main(int argc, char **argv, char **env)
 		perror("Error to pipe");
 	pid1 = fork();
 	if (pid1 == -1)
-        perror("Error to fork");
+		perror("Error to fork");
 	else if (pid1 == 0)
 		processus_1(argv[1], argv[2], pipefd, env);
 	pid2 = fork();
 	if (pid2 == -1)
-        perror("Error to fork");
+		perror("Error to fork");
 	else if (pid2 == 0)
 		processus_2(argv[4], argv[3], pipefd, env);
 	close(pipefd[0]);
-    close(pipefd[1]);
-    waitpid(pid1, NULL, 0);
-    waitpid(pid2, NULL, 0);
+	close(pipefd[1]);
+	waitpid(pid1, NULL, 0);
+	waitpid(pid2, NULL, 0);
 }

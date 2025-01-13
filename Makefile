@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: thomas <thomas@student.42.fr>              +#+  +:+       +#+         #
+#    By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/21 11:21:08 by tmillot           #+#    #+#              #
-#    Updated: 2025/01/07 14:51:31 by thomas           ###   ########.fr        #
+#    Updated: 2025/01/13 12:59:49 by tmillot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,16 +16,17 @@ CC = cc
 
 CFLAGS = -Wall -Werror -Wextra -g
 
-SRCS = ft_printf/ft_print_pointer.c \
-		ft_printf/ft_printf.c \
-		ft_printf/ft_putnbr_count.c \
-		ft_printf/ft_putnbr_hexa.c \
-		ft_printf/ft_putstr_count.c \
-		$(wildcard *.c)
+SRCS = sources/ft_printf/ft_print_pointer.c \
+		sources/ft_printf/ft_printf.c \
+		sources/ft_printf/ft_putnbr_count.c \
+		sources/ft_printf/ft_putnbr_hexa.c \
+		sources/ft_printf/ft_putstr_count.c \
+		sources/pipex_utils.c \
+		sources/main.c
 
 OBJS = $(SRCS:.c=.o)
 
-LIBFT_DIR = libft
+LIBFT_DIR = ./sources/libft
 
 LIBFT_INCLUDE = -I$(LIBFT_DIR)/includes
 
