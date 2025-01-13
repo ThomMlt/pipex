@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/21 11:16:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/01/13 12:53:38 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/13 15:26:11 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "../sources/libft/libft.h"
 # include "../sources/ft_printf/ft_printf.h"
+# include "../sources/get_next_line/get_next_line.h"
 # include <stdio.h>
 # include <unistd.h>
 # include <stdlib.h>
