@@ -6,7 +6,7 @@
 /*   By: thomas <thomas@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/13 00:05:02 by thomas           ###   ########.fr       */
+/*   Updated: 2025/01/13 11:14:04 by thomas           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,32 +41,57 @@ void ft_free_split(char **split)
     free(split);
 }
 
+void	free_essential(char **s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i])
+		free(s1[i++]);
+	free(s1);
+	free(s2);
+}
+
+void	free_all(char **s1, char **s2, char *s3)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i])
+		free(s1[i++]);
+	free(s1);
+	i = 0;
+	while (s2[i])
+		free(s2[i++]);
+	free(s2);
+	free(s3);
+}
+
 void	exec_path(char *argv, char **env)
 {
 	char	**path;
 	char	**cmd;
-	char	*tmp;
+	char	*cmd_slash;
+	char	*path_cmd;
 	int		i;
 
-	cmd = ft_split(argv, ' ');
-	tmp = ft_strjoin("/", cmd[0]);
-	free(cmd[0]);
-	cmd[0] = tmp;
 	path = ft_split(env[find_path(env)], ':');
+	cmd = ft_split(argv, ' ');
+	cmd_slash = ft_strjoin("/", *cmd);
 	i = 0;
 	while (path[i] != NULL)
 	{
-		tmp = ft_strjoin(path[i], cmd[0]);
-		if (access(path[i], F_OK | X_OK) == 0)
+		path_cmd = ft_strjoin(path[i], cmd_slash);
+		if (access(path_cmd, F_OK | X_OK) == 0)
 		{
-			execve(tmp, cmd, env);
-			free(tmp);
+			free_essential(path, cmd_slash);
+			execve(path_cmd, cmd, env);
+			free_essential(cmd, path_cmd);
 		}
-		free(tmp);
+		free(path_cmd);
 		i++;
 	}
-	ft_free_split(path);
-	ft_free_split(cmd);
+	free_all(path, cmd, cmd_slash);
 }
 
 void	processus_1(char *in_file, char *cmd, int pipefd[2], char **env)
