@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/13 17:53:36 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 11:19:52 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,35 +57,6 @@ void	exec_path(char *argv, char **env)
 	free(cmd_slash);
 }
 
-// void	processus_1(char *in_file, char *cmd, int pipefd[2], char **env)
-// {
-// 	int	in_file_fd;
-
-// 	in_file_fd = open(in_file, O_RDONLY);
-// 	if (in_file_fd == -1)
-// 	{
-// 		perror("Error during opening the entry file");
-// 		exit(1);
-// 	}
-// 	close(pipefd[0]);
-// 	dup2(in_file_fd, 0);
-// 	dup2(pipefd[1], 1);
-// 	exec_path(cmd, env);
-// }
-
-// void	processus_2(char *out_file, char *cmd, int pipefd[2], char **env)
-// {
-// 	int	out_file_fd;
-
-// 	out_file_fd = open(out_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-// 	if (out_file_fd == -1)
-// 		perror("Error during opening the entry file");
-// 	close(pipefd[1]);
-// 	dup2(pipefd[0], 0);
-// 	dup2(out_file_fd, 1);
-// 	exec_path(cmd, env);
-// }
-
 void	ft_here_doc(char *limiter)
 {
 	int		pipefd[2];
@@ -98,87 +69,95 @@ void	ft_here_doc(char *limiter)
 	if (processus == 0)
 	{
 		close(pipefd[0]);
-		line = get_next_line(0);
-		while (line != NULL)
+		while ((line = get_next_line(0)) != NULL)
 		{
 			if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
+			{
+				free(line);
 				exit(0);
+			}
 			write(pipefd[1], line, ft_strlen(line));
-			line = get_next_line(0);
+			free(line);
 		}
 	}
 	close(pipefd[1]);
 	dup2(pipefd[0], 0);
+	close(pipefd[0]);
 	wait(NULL);
 }
 
-void	ft_process(char *cmd, char **env)
+void	ft_process(char *cmd, char **env, int in_fd, int out_fd)
 {
 	pid_t	pid;
-	int		pipefd[2];
 
-	if (pipe(pipefd) == -1)
-		perror("Pipe");
 	pid = fork();
 	if (pid == -1)
 		perror("fork");
 	if (pid == 0)
+    {
+        if (in_fd != STDIN_FILENO)
+        {
+            dup2(in_fd, STDIN_FILENO);
+            close(in_fd);
+        }
+        if (out_fd != STDOUT_FILENO)
+        {
+            dup2(out_fd, STDOUT_FILENO);
+            close(out_fd);
+        }
+        exec_path(cmd, env);
+        perror("Command not found");
+    }
+}
+
+void	handle_pipes(int argc, char **argv, char **env, int start_index)
+{
+	int	i;
+	int fd[2];
+	int	prev_fd;
+	
+	prev_fd = STDIN_FILENO;
+	i = start_index;
+	while (i < (argc - 2))
 	{
-		close(pipefd[0]);
-		dup2(pipefd[1], 1);
-		exec_path(cmd, env);
+		if (pipe(fd) == -1)
+			exit(0); // faire une fonction exit error 
+		ft_process(argv[i], env, prev_fd, fd[1]);
+		close(fd[1]);
+		if (prev_fd != STDIN_FILENO)
+            close(prev_fd);
+        prev_fd = fd[0];
+		i++;
 	}
-	close(pipefd[0]);
-	dup2(pipefd[0], 0);
-	waitpid(pid, NULL, 0);
+	ft_process(argv[i], env, prev_fd, STDOUT_FILENO);
+    if (prev_fd != STDIN_FILENO)
+        close(prev_fd);
 }
 
 int	main(int argc, char **argv, char **env)
 {
 	int	out_file;
 	int	in_file;
-	int i;
+	int start_index;
 	
 	if (argc < 5)
 		perror("Entry file1 cmd1 cmd2 file2");
-	printf("argc = %d\n", argc);
-	printf("argv 6 = %s\n", argv[argc-1]);
+	// printf("argc = %d\n", argc);
+	// printf("argv 6 = %s\n", argv[argc-1]);
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
-		i = 3;
+		start_index = 3;
 		ft_here_doc(argv[2]);
 		out_file = open(argv[argc - 1], O_WRONLY | O_CREAT | O_APPEND, 0666);
 	}
 	else
 	{
-		i = 2;
+		start_index = 2;
 		out_file = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		in_file = open(argv[1], O_RDONLY);
-		dup2(in_file, 0);
+		dup2(in_file, STDIN_FILENO);
 	}
-	while (i < argc - 2)
-		ft_process(argv[i++], env);
-	dup2(out_file, 1);
-	ft_process(argv[argc - 2], env);
+	dup2(out_file, STDOUT_FILENO);
+    close(out_file);
+    handle_pipes(argc, argv, env, start_index);
 }
-	// int		pipefd[2];
-	// pid_t	pid1;
-	// pid_t	pid2;
-	// if (argc != 5)
-	// 	perror("Entry file1 cmd1 cmd2 file2");
-	// if (pipe(pipefd) == -1)
-	// 	perror("Error to pipe");
-	// pid1 = fork();
-	// if (pid1 == -1)
-	// 	perror("Error to fork");
-	// else if (pid1 == 0)
-	// 	processus_1(argv[1], argv[2], pipefd, env);
-	// pid2 = fork();
-	// if (pid2 == -1)
-	// 	perror("Error to fork");
-	// else if (pid2 == 0)
-	// 	processus_2(argv[4], argv[3], pipefd, env);
-	// close(pipefd[0]);
-	// close(pipefd[1]);
-	// waitpid(pid1, NULL, 0);
-	// waitpid(pid2, NULL, 0);
