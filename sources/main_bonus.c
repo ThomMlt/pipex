@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/16 15:20:12 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 15:50:37 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,14 +137,14 @@ int	main(int ac, char **av, char **env)
 	else
 	{
 		start_index = 2;
-		in_fd = open(av[1], O_RDONLY);
-		if (in_fd == -1 || dup2(in_fd, STDIN_FILENO) == -1)
-			exit_error_bonus(ERR_OPEN);
+		in_fd = open(av[1], O_RDONLY | F_OK);
+		if (in_fd != -1 && dup2(in_fd, STDIN_FILENO) == -1)
+			exit_error_bonus(ERR_DUP2);
 		close(in_fd);
 		out_fd = open(av[ac - 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	}
 	if (out_fd == -1 || dup2(out_fd, STDOUT_FILENO) == -1)
-		exit_error_bonus(ERR_OPEN);
+		exit_error_bonus(ERR_DUP2);
 	close(out_fd);
 	handle_pipes(ac, av, env, start_index);
 }
