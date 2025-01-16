@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/16 15:50:37 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 16:51:55 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ void	ft_here_doc(char *limiter)
 		line = get_next_line(0);
 		while (line != NULL)
 		{
-			if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0)
+			if (if_limiter(line, limiter) == 0)
 				return (free(line), exit(1));
 			write(fd[1], line, ft_strlen(line));
 			free(line);

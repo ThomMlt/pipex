@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 11:48:21 by tmillot           #+#    #+#             */
-/*   Updated: 2025/01/16 15:19:19 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 16:51:30 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,12 @@ int	find_path_bonus(char **env)
 		i++;
 	}
 	return (-1);
+}
+
+int	if_limiter(char *line, char *limiter)
+{
+	if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
+		&& ft_strlen(limiter) == ft_strlen(line) - 1)
+		return (0);
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/21 11:16:39 by tmillot           #+#    #+#             */
-/*   Updated: 2025/01/16 15:19:47 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 16:51:46 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,5 +43,6 @@ int		find_path_bonus(char **env);
 void	exec_path(char *argv, char **env);
 void	processus_1(char *in_file, char *cmd, int pipefd[2], char **env);
 void	processus_2(char *out_file, char *cmd, int pipefd[2], char **env);
+int		if_limiter(char *line, char *limiter);
 
 #endif
