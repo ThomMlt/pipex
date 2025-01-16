@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/16 11:19:52 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 11:43:16 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,8 +142,6 @@ int	main(int argc, char **argv, char **env)
 	
 	if (argc < 5)
 		perror("Entry file1 cmd1 cmd2 file2");
-	// printf("argc = %d\n", argc);
-	// printf("argv 6 = %s\n", argv[argc-1]);
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
 		start_index = 3;
