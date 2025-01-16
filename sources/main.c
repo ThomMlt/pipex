@@ -6,7 +6,7 @@
 /*   By: tmillot <tmillot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/03 17:04:40 by thomas            #+#    #+#             */
-/*   Updated: 2025/01/13 12:50:57 by tmillot          ###   ########.fr       */
+/*   Updated: 2025/01/16 14:00:55 by tmillot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ void	exec_path(char *argv, char **env)
 	path = ft_split(env[find_path(env)], ':');
 	cmd = ft_split(argv, ' ');
 	cmd_slash = ft_strjoin("/", *cmd);
-	i = 0;
-	while (path[i] != NULL)
+	i = -1;
+	while (path[++i] != NULL)
 	{
 		path_cmd = ft_strjoin(path[i], cmd_slash);
 		if (access(path_cmd, F_OK | X_OK) == 0)
@@ -48,13 +48,13 @@ void	exec_path(char *argv, char **env)
 			ft_free_tab(path);
 			free(cmd_slash);
 			execve(path_cmd, cmd, env);
-			free_all(cmd, &path_cmd);
+			return (ft_free_tab(cmd), free(path_cmd), exit_error(ERR_EXEC));
 		}
 		free(path_cmd);
-		i++;
 	}
 	free_all(path, cmd);
 	free(cmd_slash);
+	exit_error(ERR_EXEC);
 }
 
 void	processus_1(char *in_file, char *cmd, int pipefd[2], char **env)
@@ -63,13 +63,12 @@ void	processus_1(char *in_file, char *cmd, int pipefd[2], char **env)
 
 	in_file_fd = open(in_file, O_RDONLY);
 	if (in_file_fd == -1)
-	{
-		perror("Error during opening the entry file");
-		exit(1);
-	}
+		exit_error(ERR_OPEN);
 	close(pipefd[0]);
-	dup2(in_file_fd, 0);
-	dup2(pipefd[1], 1);
+	if (dup2(in_file_fd, STDIN_FILENO) == -1
+		|| dup2(pipefd[1], STDOUT_FILENO) == -1)
+		exit_error(ERR_DUP2);
+	close(in_file_fd);
 	exec_path(cmd, env);
 }
 
@@ -79,10 +78,12 @@ void	processus_2(char *out_file, char *cmd, int pipefd[2], char **env)
 
 	out_file_fd = open(out_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (out_file_fd == -1)
-		perror("Error during opening the entry file");
+		exit_error(ERR_OPEN);
 	close(pipefd[1]);
-	dup2(pipefd[0], 0);
-	dup2(out_file_fd, 1);
+	if (dup2(pipefd[0], STDIN_FILENO) == -1
+		|| dup2(out_file_fd, STDOUT_FILENO) == -1)
+		exit_error(ERR_DUP2);
+	close(out_file_fd);
 	exec_path(cmd, env);
 }
 
@@ -93,17 +94,17 @@ int	main(int argc, char **argv, char **env)
 	pid_t	pid2;
 
 	if (argc != 5)
-		perror("Entry file1 cmd1 cmd2 file2");
+		exit_error(ERR_ARGC);
 	if (pipe(pipefd) == -1)
-		perror("Error to pipe");
+		exit_error(ERR_PIPE);
 	pid1 = fork();
 	if (pid1 == -1)
-		perror("Error to fork");
+		exit_error(ERR_FORK);
 	else if (pid1 == 0)
 		processus_1(argv[1], argv[2], pipefd, env);
 	pid2 = fork();
 	if (pid2 == -1)
-		perror("Error to fork");
+		exit_error(ERR_FORK);
 	else if (pid2 == 0)
 		processus_2(argv[4], argv[3], pipefd, env);
 	close(pipefd[0]);
